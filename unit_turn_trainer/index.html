@@ -197,8 +197,8 @@
         <div class="status" id="status"></div>
 
         <div class="speed-selector" id="speedSelector">
-            <button class="speed-btn" onclick="setSpeed('devagar')" id="btn-devagar">🎾 Devagar<br><small>3–6s</small></button>
-            <button class="speed-btn active" onclick="setSpeed('treino')" id="btn-treino">💪 Treino<br><small>1.5–3s</small></button>
+            <button class="speed-btn" onclick="setSpeed('devagar')" id="btn-devagar">🎾 Devagar<br><small>2–4s</small></button>
+            <button class="speed-btn active" onclick="setSpeed('treino')" id="btn-treino">💪 Treino<br><small>2–3s</small></button>
             <button class="speed-btn" onclick="setSpeed('intenso')" id="btn-intenso">⚡ Intenso<br><small>0.8–1.5s</small></button>
         </div>
 
@@ -218,8 +218,8 @@
         const ROUND_DURATION = 60; // segundos
 
         const SPEEDS = {
-            devagar: { min: 3000, max: 6000, label: '🎾 Devagar' },
-            treino:  { min: 1500, max: 3000, label: '💪 Treino'  },
+            devagar: { min: 2000, max: 4000, label: '🎾 Devagar' },
+            treino:  { min: 2000, max: 3000, label: '💪 Treino'  },
             intenso: { min: 800,  max: 1500, label: '⚡ Intenso' },
         };
         let currentSpeed = 'treino';
@@ -391,22 +391,29 @@
             
             if (currentRound < TOTAL_ROUNDS) {
                 document.getElementById('trainingState').textContent = '⏸️ DESCANSO';
-                document.getElementById('status').textContent = '30 segundos de descanso';
-                speak('Descanso. 30 segundos');
+                document.getElementById('status').textContent = '1 minuto de descanso';
+                speak('Descanso. 1 minuto');
                 
+                // Avisar aos 30 segundos de descanso
+                setTimeout(() => {
+                    if (isTraining) {
+                        speak('30 segundos para próxima rodada');
+                    }
+                }, 30000);
+
                 // Avisar aos 10 segundos de descanso
                 setTimeout(() => {
                     if (isTraining) {
                         speak('10 segundos para próxima rodada');
                     }
-                }, 20000);
+                }, 50000);
                 
-                // Próxima rodada após 30 segundos
+                // Próxima rodada após 60 segundos
                 setTimeout(() => {
                     if (isTraining) {
                         startRound();
                     }
-                }, 30000);
+                }, 60000);
             } else {
                 endTraining();
             }
