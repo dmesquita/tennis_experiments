@@ -140,6 +140,52 @@
             font-size: 1.5em;
         }
 
+        details {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        summary {
+            padding: 14px 18px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            list-style: none;
+            user-select: none;
+        }
+
+        summary::after {
+            content: ' ▼';
+            font-size: 0.75em;
+            opacity: 0.7;
+        }
+
+        details[open] summary::after {
+            content: ' ▲';
+        }
+
+        .drill-info {
+            padding: 0 18px 16px;
+            font-size: 0.95em;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .drill-info ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+
+        .drill-info li {
+            margin-bottom: 6px;
+        }
+
+        .drill-info strong {
+            opacity: 1;
+        }
+
         .speed-selector {
             display: flex;
             justify-content: center;
@@ -179,6 +225,19 @@
         <h1>🎾 Treino Unit Turn</h1>
         
         <div class="audio-indicator" id="audioIndicator">🎧 Use fones de ouvido para melhor experiência</div>
+
+        <details>
+            <summary>ℹ️ Como fazer o drill</summary>
+            <div class="drill-info">
+                <ol>
+                    <li><strong>Entre os comandos:</strong> fique fazendo split steps rápidos e contínuos — nunca parado. No jogo você está sempre em movimento leve esperando a bola.</li>
+                    <li><strong>Ao ouvir o comando:</strong> o split step vira o gatilho — pousa e já inicia o unit turn girando tronco e ombros em uma unidade só para o lado chamado.</li>
+                    <li><strong>Uncoil:</strong> gire o tronco no sentido oposto até sentir o ombro encostar no queixo. Isso garante rotação completa e evita mão morta.</li>
+                    <li><strong>Retorne:</strong> volte ativamente para a posição de prontidão e retome os split steps.</li>
+                </ol>
+                <p>O ciclo completo simula o coil + uncoil de um golpe real. A energia vem do tronco, não do braço.</p>
+            </div>
+        </details>
         
         <div class="stats">
             <div class="stat">
