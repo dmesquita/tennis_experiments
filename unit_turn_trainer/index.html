@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino Unit Turn - Tênis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .direction {
+            font-size: 6em;
+            font-weight: bold;
+            margin: 30px 0;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            animation: pulse 0.3s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 30px 60px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px;
+            min-width: 200px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: 1.4em;
+            min-height: 40px;
+            font-weight: 500;
+        }
+
+        .audio-indicator {
+            margin: 15px 0;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .training-state {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 1.3em;
+        }
+
+        .complete {
+            background: rgba(46, 213, 115, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .speed-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .speed-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            font-size: 1em;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            min-width: 0;
+            box-shadow: none;
+            flex: 1;
+        }
+
+        .speed-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.03);
+        }
+
+        .speed-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎾 Treino Unit Turn</h1>
+        
+        <div class="audio-indicator" id="audioIndicator">🎧 Use fones de ouvido para melhor experiência</div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Rodada</div>
+                <div class="stat-value" id="round">0/4</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Tempo</div>
+                <div class="stat-value" id="timer">60s</div>
+            </div>
+        </div>
+
+        <div class="direction" id="direction">Pronto?</div>
+        
+        <div class="training-state" id="trainingState"></div>
+        <div class="status" id="status"></div>
+
+        <div class="speed-selector" id="speedSelector">
+            <button class="speed-btn" onclick="setSpeed('devagar')" id="btn-devagar">🎾 Devagar<br><small>3–6s</small></button>
+            <button class="speed-btn active" onclick="setSpeed('treino')" id="btn-treino">💪 Treino<br><small>1.5–3s</small></button>
+            <button class="speed-btn" onclick="setSpeed('intenso')" id="btn-intenso">⚡ Intenso<br><small>0.8–1.5s</small></button>
+        </div>
+
+        <div>
+            <button id="startBtn" onclick="startTraining()">▶️ INICIAR</button>
+            <button id="stopBtn" onclick="stopTraining()" style="display: none;">⏹️ PARAR</button>
+        </div>
+    </div>
+
+    <script>
+        let currentRound = 0;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let commandInterval = null;
+        let isTraining = false;
+        const TOTAL_ROUNDS = 4;
+        const ROUND_DURATION = 60; // segundos
+
+        const SPEEDS = {
+            devagar: { min: 3000, max: 6000, label: '🎾 Devagar' },
+            treino:  { min: 1500, max: 3000, label: '💪 Treino'  },
+            intenso: { min: 800,  max: 1500, label: '⚡ Intenso' },
+        };
+        let currentSpeed = 'treino';
+
+        function setSpeed(speed) {
+            currentSpeed = speed;
+            document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + speed).classList.add('active');
+        }
+
+        // Configurar síntese de voz
+        const synth = window.speechSynthesis;
+        let voice = null;
+
+        // Audio Context para beeps
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Carregar voz feminina em português
+        function loadVoice() {
+            const voices = synth.getVoices();
+            const ptVoices = voices.filter(v => v.lang.startsWith('pt'));
+
+            // Nomes conhecidos de vozes femininas por plataforma
+            const femaleNames = ['luciana', 'google português do brasil', 'female', 'feminina', 'francisca'];
+            voice = ptVoices.find(v => femaleNames.some(n => v.name.toLowerCase().includes(n)))
+                 || ptVoices[0]
+                 || voices[0];
+        }
+
+        // Carregar vozes quando disponíveis
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoice;
+        }
+        loadVoice();
+
+        // Função para criar beep
+        function playBeep(frequency, duration, volume = 0.3) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        // Beeps específicos para eventos
+        function beepCommand() {
+            playBeep(800, 0.1); // Beep agudo curto para comando
+        }
+
+        function beepRoundStart() {
+            playBeep(600, 0.15);
+            setTimeout(() => playBeep(800, 0.15), 150);
+            setTimeout(() => playBeep(1000, 0.2), 300);
+        }
+
+        function beepRoundEnd() {
+            playBeep(1000, 0.15);
+            setTimeout(() => playBeep(800, 0.15), 150);
+            setTimeout(() => playBeep(600, 0.2), 300);
+        }
+
+        function beepComplete() {
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => playBeep(1200, 0.2), i * 250);
+            }
+        }
+
+        function speak(text, callback) {
+            if (!synth.speaking) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'pt-BR';
+                utterance.rate = 1.2;
+                utterance.pitch = 1;
+                utterance.volume = 1;
+                if (voice) {
+                    utterance.voice = voice;
+                }
+                if (callback) {
+                    utterance.onend = callback;
+                }
+                synth.speak(utterance);
+            }
+        }
+
+        function getRandomDirection() {
+            return Math.random() < 0.5 ? 'DIREITA' : 'ESQUERDA';
+        }
+
+        function showDirection() {
+            const direction = getRandomDirection();
+            document.getElementById('direction').textContent = direction;
+            beepCommand();
+            speak(direction.toLowerCase());
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            document.getElementById('timer').textContent = timeLeft + 's';
+            
+            // Avisos sonoros nos últimos 10 segundos
+            if (timeLeft <= 10 && timeLeft > 0) {
+                playBeep(400, 0.05);
+            }
+            
+            // Aviso verbal aos 30 segundos
+            if (timeLeft === 30) {
+                speak('30 segundos');
+            }
+            
+            // Aviso verbal aos 10 segundos
+            if (timeLeft === 10) {
+                speak('10 segundos');
+            }
+            
+            if (timeLeft <= 0) {
+                endRound();
+            }
+        }
+
+        function scheduleNextCommand() {
+            const { min, max } = SPEEDS[currentSpeed];
+            const delay = Math.random() * (max - min) + min;
+            commandInterval = setTimeout(() => {
+                if (isTraining) {
+                    showDirection();
+                    scheduleNextCommand();
+                }
+            }, delay);
+        }
+
+        function startRound() {
+            currentRound++;
+            timeLeft = ROUND_DURATION;
+            document.getElementById('round').textContent = currentRound + '/' + TOTAL_ROUNDS;
+            document.getElementById('timer').textContent = timeLeft + 's';
+            document.getElementById('trainingState').textContent = '🏃 EM TREINO';
+            document.getElementById('status').textContent = '';
+            
+            beepRoundStart();
+            speak('Rodada ' + currentRound + '. Começando');
+            
+            // Começar comandos após 3 segundos
+            setTimeout(() => {
+                if (isTraining) {
+                    showDirection();
+                    scheduleNextCommand();
+                }
+            }, 3000);
+            
+            // Iniciar timer
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function endRound() {
+            clearInterval(timerInterval);
+            clearTimeout(commandInterval);
+            
+            document.getElementById('direction').textContent = '💤';
+            beepRoundEnd();
+            
+            if (currentRound < TOTAL_ROUNDS) {
+                document.getElementById('trainingState').textContent = '⏸️ DESCANSO';
+                document.getElementById('status').textContent = '30 segundos de descanso';
+                speak('Descanso. 30 segundos');
+                
+                // Avisar aos 10 segundos de descanso
+                setTimeout(() => {
+                    if (isTraining) {
+                        speak('10 segundos para próxima rodada');
+                    }
+                }, 20000);
+                
+                // Próxima rodada após 30 segundos
+                setTimeout(() => {
+                    if (isTraining) {
+                        startRound();
+                    }
+                }, 30000);
+            } else {
+                endTraining();
+            }
+        }
+
+        function startTraining() {
+            // Iniciar AudioContext (necessário após interação do usuário)
+            audioContext.resume();
+            
+            isTraining = true;
+            currentRound = 0;
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'inline-block';
+            document.getElementById('speedSelector').style.display = 'none';
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('audioIndicator').textContent = '🎧 Áudio ativado · ' + SPEEDS[currentSpeed].label;
+            
+            speak('Iniciando treino em 3 segundos. Prepare-se');
+            
+            // Começar primeira rodada após 3 segundos
+            setTimeout(() => {
+                if (isTraining) {
+                    startRound();
+                }
+            }, 3000);
+        }
+
+        function stopTraining() {
+            isTraining = false;
+            clearInterval(timerInterval);
+            clearTimeout(commandInterval);
+            
+            currentRound = 0;
+            timeLeft = 60;
+            document.getElementById('round').textContent = '0/4';
+            document.getElementById('timer').textContent = '60s';
+            document.getElementById('direction').textContent = 'Pronto?';
+            document.getElementById('trainingState').textContent = '';
+            document.getElementById('status').textContent = '';
+            document.getElementById('audioIndicator').textContent = '🎧 Use fones de ouvido para melhor experiência';
+            document.getElementById('speedSelector').style.display = 'flex';
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            speak('Treino interrompido');
+        }
+
+        function endTraining() {
+            isTraining = false;
+            document.getElementById('direction').innerHTML = '🎉';
+            document.getElementById('trainingState').textContent = '✅ COMPLETO';
+            document.getElementById('status').innerHTML = '<div class="complete">Treino Completo! Excelente trabalho!</div>';
+            document.getElementById('startBtn').style.display = 'inline-block';
+            document.getElementById('stopBtn').style.display = 'none';
+            
+            beepComplete();
+            speak('Treino completo! Parabéns! Excelente trabalho!');
+            
+            // Reset após 8 segundos
+            setTimeout(() => {
+                currentRound = 0;
+                timeLeft = 60;
+                document.getElementById('round').textContent = '0/4';
+                document.getElementById('timer').textContent = '60s';
+                document.getElementById('direction').textContent = 'Pronto?';
+                document.getElementById('trainingState').textContent = '';
+                document.getElementById('status').innerHTML = '';
+                document.getElementById('audioIndicator').textContent = '🎧 Use fones de ouvido para melhor experiência';
+                document.getElementById('speedSelector').style.display = 'flex';
+                setSpeed(currentSpeed);
+            }, 8000);
+        }
+    </script>
+</body>
+</html>
